@@ -61,9 +61,9 @@ void findWaitingTime(Process proc[], int n, int wt[]) {
 	}
 }
 
-// Function to calculate turn around time
+// Function to calculate complete time
 void findTurnAroundTime(Process proc[], int n, int wt[], int tat[]) {
-	// calculating turnaround time by adding
+	// calculating complete time by adding
 	// bt[i] + wt[i]
 	for (int i = 0; i < n; i++)
 		tat[i] = proc[i].bt + wt[i];
@@ -75,7 +75,7 @@ void findavgTime(Process proc[], int n) {
 	// Function to find waiting time of all
 	// processes
 	findWaitingTime(proc, n, wt);
-	// Function to find turn around time for
+	// Function to find complete time for
 	// all processes
 	findTurnAroundTime(proc, n, wt, tat);
 	// Display processes along with all
@@ -85,7 +85,7 @@ void findavgTime(Process proc[], int n) {
 		<< "Wating time\t"
 		<< "Complete time\t\n";
 	// Calculate total waiting time and
-	// total turnaround time
+	// total complete time
 	for (int i = 0; i < n; i++) {
 		total_wt = total_wt + wt[i];
 		total_tat = total_tat + tat[i];
