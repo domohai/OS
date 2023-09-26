@@ -2,39 +2,82 @@
 
 using namespace std;
 
-class Process {
-public:
-    int id; // process id
-    int burst_time;
-    int priority;
-    int arrival_time;
-    Process(int id, int burst_time, int priority, int arrival_time) {
-        this->id = id;
-        this->burst_time = burst_time;
-        this->priority = priority;
-        this->arrival_time = arrival_time;
-    }
-    ~Process() {};
+#define totalprocess 5
+
+struct process {
+    int at, bt, pr, pno;
 };
 
-int main() {
-    int number_of_process = 5;
-    Process processes[] = {
-            {1, 10, 3, 0},
-            {2, 1 , 1, 0},
-            {3, 2 , 4, 0},
-            {4, 1 , 5, 0},
-            {5, 5 , 2, 0}
-        };
-    
-    return 0;
+process proc[50];
+
+bool comp(process a,process b) {
+    if(a.at == b.at) {
+        return a.pr<b.pr;
+    } else {
+	    return a.at<b.at;
+    }
 }
 
-void wating_time(const Process processes[], const int& n, int wating_time[]) {
-    int completed_process = 0;
-    int t = 0;
-    vector<Process> current_processes;
-    while (completed_process < n) {
-        
+void get_wt_time(int wt[]) {
+    int service[50];
+    service[0] = proc[0].at;
+    wt[0]=0;
+    for(int i=1;i<totalprocess;i++) {
+        service[i]=proc[i-1].bt+service[i-1];
+        wt[i]=service[i]-proc[i].at;
+	    if(wt[i]<0) {
+	        wt[i]=0;
+	    }
     }
+}
+
+void get_tat_time(int tat[],int wt[]) {
+    for(int i=0;i<totalprocess;i++) {
+	    tat[i]=proc[i].bt+wt[i];
+    }
+}
+
+void findgc() {
+    int wt[50],tat[50];
+    double wavg=0,tavg=0;
+    get_wt_time(wt);
+    get_tat_time(tat,wt);
+    int stime[50],ctime[50];
+    stime[0] = proc[0].at;
+    ctime[0]=stime[0]+tat[0];
+
+    // calculating starting and ending time
+    for(int i=1;i<totalprocess;i++) {
+        stime[i]=ctime[i-1];
+        ctime[i]=stime[i]+tat[i]-wt[i];
+    }
+    cout<<"Process\t\tStart_time\tComplete_time\tWaiting_Time"<<endl;
+	for(int i=0;i<totalprocess;i++) {
+		wavg += wt[i];
+		tavg += tat[i];
+		cout<<proc[i].pno<<"\t\t"<<
+			stime[i]<<"\t\t"<<
+			tat[i]<<"\t\t\t"<<wt[i]<<endl;
+	}
+	cout<<"Average waiting time is : ";
+	cout<<wavg/(float)totalprocess<<endl;
+	cout<<"average complete time : ";
+	cout<<tavg/(float)totalprocess<<endl;
+
+}
+
+int main() {
+    int arrivaltime[] = { 0, 0, 0, 0, 0 };
+    int bursttime[] = { 10, 1, 2, 1, 5 };
+    int priority[] = { 3, 1, 4, 5, 2 };
+	
+    for(int i=0;i<totalprocess;i++) {
+        proc[i].at=arrivaltime[i];
+        proc[i].bt=bursttime[i];
+        proc[i].pr=priority[i];
+        proc[i].pno=i+1;
+	}
+	sort(proc,proc+totalprocess,comp);
+	findgc();
+	return 0;
 }
